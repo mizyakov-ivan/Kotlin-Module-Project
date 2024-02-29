@@ -14,24 +14,32 @@ fun onNotesMenuAction(action: Int) {
 }
 
 fun addNote() {
-    nameNotes[currentArchive]?.add(getNewItem("Введите текст заметки:"))
+    val noteName = getNewItem("Введите имя заметки:")
+    val noteContent = getNewItem("Введите содержание заметки:")
+    nameNotes[currentArchive]?.add("$noteName\n$noteContent")
     println("Заметка записана.\n")
 }
 
 fun viewNotes(notes: MutableList<String>) {
     if (notes.isEmpty()) println("Ещё не введено ни одной заметки.\n")
-    else { selectAction(
-        caption = "Выберите заметку",
-        notes.map { it.substring(0, it.length.coerceAtMost(300)) },
-        ::onNotesListMenuAction
-    )
+    else {
+        selectAction(
+            caption = "Выберите заметку",
+            notes.map { it.substringBefore("\n") },
+            ::onNotesListMenuAction
+        )
     }
 }
 
 fun onNotesListMenuAction(action: Int) {
+    val selectedNote = nameNotes[currentArchive]?.get(action)
     println("Заметка из архива $currentArchive:")
-    println("Содержание заметки:")
-    println(nameNotes[currentArchive]?.get(action))
-    println("*****")
-    getNewItem("Для перехода на список заметок, введите любой символ.")
+    selectedNote?.let {
+        val noteParts = it.split("\n")
+        println("Имя заметки: ${noteParts[0]}")
+        println("Содержание заметки:")
+        println(noteParts[1])
+        println("*****")
+        getNewItem("Для перехода на список заметок, введите любой символ.")
+    }
 }
